@@ -48,7 +48,7 @@ BOOL CSearchWorker::OpenNtfsVolume()
 			if (fileSysBuf[0] == L'N' && fileSysBuf[1] == L'T' && fileSysBuf[2] == L'F' && fileSysBuf[3] == L'S')
 			{
 				//////////获取驱动盘句柄/////////////
-				HANDLE hVolume = tools::GetDriversHandle(pDri);
+				HANDLE hVolume = Usntools::GetDriversHandle(pDri);
 				if (INVALID_HANDLE_VALUE == hVolume)
 				{
 					SStringT strContent;
@@ -60,14 +60,14 @@ BOOL CSearchWorker::OpenNtfsVolume()
 
 				//////////创建USN日志/////////////
 				NTFS_VOLUME_DATA_BUFFER ntfsVolData;
-				tools::CreateUsnJournal(hVolume, ntfsVolData);
+				Usntools::CreateUsnJournal(hVolume, ntfsVolData);
 
 				mapBytesPerCluster.SetAt(dwDri, ntfsVolData.BytesPerCluster);
 				mapFileRecSize.SetAt(dwDri, sizeof(NTFS_FILE_RECORD_OUTPUT_BUFFER) - 1 + ntfsVolData.BytesPerFileRecordSegment);
 			
 				//////////查询USN日志/////////////
 				USN_JOURNAL_DATA usnJournalData;
-				tools::QueryUsnJournal(hVolume, &usnJournalData);
+				Usntools::QueryUsnJournal(hVolume, &usnJournalData);
 				mapJournalID.SetAt(dwDri, usnJournalData.UsnJournalID);
 				mapFirstUSN.SetAt(dwDri, usnJournalData.FirstUsn);
 				mapNextUSN.SetAt(dwDri, usnJournalData.NextUsn);

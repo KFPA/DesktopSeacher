@@ -59,7 +59,7 @@ namespace SOUI
 	};
 
 }//namespace SOUI
-namespace tools
+namespace Usntools
 {
 	static HANDLE GetDriversHandle(WCHAR* pDri)
 	{
