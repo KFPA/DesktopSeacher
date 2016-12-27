@@ -2,4 +2,5 @@
   <string>
     <title value="DesktopSearcher"/>
     <ver value="1.0"/>
+    <volerror value="Create volume %c failure, error code is %d"/>
   </string>

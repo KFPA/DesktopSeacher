@@ -94,6 +94,7 @@
   <ItemGroup>
     <ClCompile Include="DesktopSearcher.cpp" />
     <ClCompile Include="MainDlg.cpp" />
+    <ClCompile Include="SearchWorker.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
@@ -106,6 +107,7 @@
     <ClInclude Include="CommonHeader.h" />
     <ClInclude Include="MainDlg.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="SearchWorker.h" />
     <ClInclude Include="stdafx.h" />
   </ItemGroup>
   <ItemGroup>
