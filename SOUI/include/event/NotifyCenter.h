@@ -26,15 +26,8 @@ namespace SOUI
 		}
 	};
 
-	struct INotifyCallback{
-		virtual void OnFireEvent(EventArgs *e) = 0;
-	};
-
-	class SNotifyReceiver;
-
 	class SOUI_EXP SNotifyCenter : public SSingleton<SNotifyCenter>
 						, public SEventSet
-						, protected INotifyCallback
 	{
 	public:
 		SNotifyCenter(void);
@@ -81,13 +74,22 @@ namespace SOUI
         */
 		bool UnregisterEventMap(const ISlotFunctor & slot);
 	protected:
-		virtual void OnFireEvent(EventArgs *e);
+		void OnFireEvent(EventArgs *e);
 
+		void ExecutePendingEvents();
 
+		static VOID CALLBACK OnTimer( HWND hwnd,
+			UINT uMsg,
+			UINT_PTR idEvent,
+			DWORD dwTime
+			);
+
+		SCriticalSection	m_cs;			//线程同步对象
+		SList<EventArgs*>	*m_evtPending;//挂起的等待执行的事件
 		DWORD				m_dwMainTrdID;//主线程ID
+		
+		UINT_PTR			m_timerID;	//定时器ID，用来执行异步事件
 
 		SList<ISlotFunctor*>	m_evtHandlerMap;
-
-		SNotifyReceiver	 *  m_pReceiver;
 	};
 }

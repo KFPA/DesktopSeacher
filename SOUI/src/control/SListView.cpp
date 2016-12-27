@@ -224,9 +224,8 @@ namespace SOUI
             if (uCode==SB_THUMBTRACK)
                 ScrollUpdate();
 
-            return TRUE;
         }
-        return FALSE;
+        return TRUE;
     }
 
 

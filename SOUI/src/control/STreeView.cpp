@@ -624,7 +624,7 @@ namespace SOUI
             return;
         }
 
-        if(m_hSelected != ITvAdapter::ITEM_NULL  && m_bWantTab)
+        if(m_hSelected != ITvAdapter::ITEM_NULL)
         {
             SItemPanel *pItem = GetItemPanel(m_hSelected);
             if(pItem)
@@ -675,7 +675,7 @@ namespace SOUI
         if(nNewSelItem!= ITvAdapter::ITEM_NULL)
         {
             EnsureVisible(nNewSelItem);
-            SetSel(nNewSelItem,TRUE);
+            SetSel(nNewSelItem);
         }
     }
 
@@ -972,7 +972,7 @@ namespace SOUI
 		else {
             if(uMsg==WM_LBUTTONDOWN || uMsg== WM_RBUTTONDOWN || uMsg==WM_MBUTTONDOWN)
 			{//交给panel处理
-				SItemPanel* pPanel = HitTest(CPoint(pt));
+				SItemPanel* pPanel = HitTest(pt);
 				if (!pPanel && m_hSelected)  //hit in none-item area,so make item to killfocus 
 				{
 					SItemPanel *pSelItem = GetItemPanel(m_hSelected);
@@ -1071,9 +1071,8 @@ namespace SOUI
 			if (uCode==SB_THUMBTRACK)
 				ScrollUpdate();
 
-            return TRUE;
-        }
-        return FALSE;
+		}
+		return TRUE;
 	}
 
 	int STreeView::GetScrollLineSize( BOOL bVertical )
