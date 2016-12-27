@@ -93,3 +93,12 @@ namespace Usntools
 			, NULL);
 	}
 }
+
+#define DATABASEDIR L"C:\\ntfsds.db" //数据库文件存在此目录下
+
+inline void DebugString(SOUI::SStringW strContent, ...)
+{
+#ifdef _DEBUG
+	MessageBox(NULL, strContent, SOUI::GETSTRING(L"@string/title"), MB_OK);
+#endif
+}

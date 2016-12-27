@@ -53,7 +53,7 @@ BOOL CSearchWorker::OpenNtfsVolume()
 				{
 					SStringT strContent;
 					strContent.Format(GETSTRING(L"@string/volerror"), *pDri, GetLastError());
-					MessageBox(NULL, strContent, GETSTRING(L"@string/title"), MB_OK);
+					DebugString(strContent);
 				}
 
 				mapHandle.SetAt(dwDri, hVolume);  //±£´æ¾ä±ú
@@ -106,4 +106,43 @@ void CSearchWorker::InitDrives()
 			vol[i] = cvol;
 		}
 	}
+}
+
+BOOL CSearchWorker::LoadDatabase(HWND hMainWnd)
+{
+	BOOL bRet = TRUE;
+	HANDLE hDB = CreateFileW(DATABASEDIR,
+		GENERIC_READ,
+		FILE_SHARE_READ,
+		NULL,
+		OPEN_EXISTING,
+		FILE_ATTRIBUTE_NORMAL,
+		NULL);
+	if (INVALID_HANDLE_VALUE == hDB)
+	{
+		SStringT strContent;
+		strContent.Format(GETSTRING(L"@string/volerror"), hDB, GetLastError());
+		DebugString(strContent);
+		bRet = FALSE;
+	}
+
+	DWORD dwFileSize = GetFileSize(hDB, NULL);
+	if (INVALID_FILE_SIZE == dwFileSize || dwFileSize <(16+20+8+26))
+	{
+		SStringT strContent;
+		strContent.Format(GETSTRING(L"@string/errorcode"), GetLastError());
+		DebugString(strContent);
+		bRet = FALSE;
+	}
+//	PBYTE DB_Buffer = g_MemoryMgr.GetMemory(dwFileSize);
+// 	DWORD dwRead;
+// 	BOOL bReadOK = ReadFile(hDB, DB_Buffer, dwFileSize, &dwRead, NULL);
+// 	if (!bReadOK || dwRead != dwFileSize)
+// 	{
+// 		DebugString(L"Failed to read file:%d", GetLastError());
+// 		bRet = FALSE;
+// 	}
+
+
+	return bRet;
 }

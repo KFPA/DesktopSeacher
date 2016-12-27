@@ -18,6 +18,16 @@ public:
 	**/
 	BOOL OpenNtfsVolume();
 	/**
+	*	Function:
+	*      加载数据库,建立基本数据结构，包括加载和更新
+	*	Parameter(s):
+	*
+	*	Return:
+	*      若成功加载，返回TRUE;否则表示需要重新扫面数据库
+	*	Commons:
+	**/
+	BOOL LoadDatabase(HWND hMainWnd);
+	/**
 	*   Function:
 	*     判断磁盘是否为NTFS卷
 	*     Parameter(s):
