@@ -79,9 +79,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="src\ScriptModule-Lua.rc" />
-  </ItemGroup>
-  <ItemGroup>
     <CustomBuild Include="src\stdafx.h">
       <Filter>Header Files</Filter>
     </CustomBuild>

@@ -228,6 +228,9 @@
     <ClCompile Include="src\helper\smenuex.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\helper\spropbag.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="src\helper\stooltip.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -506,6 +509,9 @@
     <ClInclude Include="include\core\SwndStyle.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\interface\TvItemLocator-i.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="include\interface\adapter-i.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -554,6 +560,12 @@
     <ClInclude Include="include\soui-version.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\interface\spropbag-i.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\helper\spropbag.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="include\interface\stooltip-i.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -574,9 +586,6 @@
     <None Include="include\activex\wmp.tlh">
       <Filter>Header Files</Filter>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="soui.rc" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="include\souistd.h">

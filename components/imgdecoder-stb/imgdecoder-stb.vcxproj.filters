@@ -23,7 +23,4 @@
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="imgdecoder-stb.rc" />
-  </ItemGroup>
 </Project>

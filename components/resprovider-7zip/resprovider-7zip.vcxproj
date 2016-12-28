@@ -210,6 +210,10 @@ echo #include "stdafx.h"&gt;&gt;stdafx.h.cpp</Command>
     <ClInclude Include="Zip7Archive.h" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\third-part\7z\7z.vcxproj">
+      <Project>{7523b9a2-68d0-3894-941b-7d87f513c094}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
     <ProjectReference Include="..\..\utilities\utilities.vcxproj">
       <Project>{8d2ba5d9-3830-3f71-ae13-e21d5554a8f9}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
