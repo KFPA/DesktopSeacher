@@ -94,7 +94,7 @@
   <ItemGroup>
     <ClCompile Include="DesktopSearcher.cpp" />
     <ClCompile Include="MainDlg.cpp" />
-    <ClCompile Include="MemoryManager.cpp" />
+    <ClCompile Include="MemoryMgr.cpp" />
     <ClCompile Include="SearchWorker.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -107,7 +107,7 @@
   <ItemGroup>
     <ClInclude Include="CommonHeader.h" />
     <ClInclude Include="MainDlg.h" />
-    <ClInclude Include="MemoryManager.h" />
+    <ClInclude Include="MemoryMgr.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="SearchWorker.h" />
     <ClInclude Include="stdafx.h" />

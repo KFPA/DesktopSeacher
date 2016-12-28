@@ -134,15 +134,37 @@ BOOL CSearchWorker::LoadDatabase(HWND hMainWnd)
 		DebugString(strContent);
 		bRet = FALSE;
 	}
-//	PBYTE DB_Buffer = g_MemoryMgr.GetMemory(dwFileSize);
-// 	DWORD dwRead;
-// 	BOOL bReadOK = ReadFile(hDB, DB_Buffer, dwFileSize, &dwRead, NULL);
-// 	if (!bReadOK || dwRead != dwFileSize)
-// 	{
-// 		DebugString(L"Failed to read file:%d", GetLastError());
-// 		bRet = FALSE;
-// 	}
+	PBYTE DB_Buffer = g_pMemoryMgr->GetMemory(dwFileSize);
+ 	DWORD dwRead;
+ 	BOOL bReadOK = ReadFile(hDB, DB_Buffer, dwFileSize, &dwRead, NULL);
+ 	if (!bReadOK || dwRead != dwFileSize)
+ 	{
+ 		DebugString(L"Failed to read file:%d", GetLastError());	
+		g_pMemoryMgr->FreeMemory(DB_Buffer);
+		bRet = FALSE;
+ 	}
+	//4b ÎÄ¼þ´óÐ¡ MAPÆ«ÒÆ DIRÆ«ÒÆ FILEÆ«ÒÆ   =16B
+	//4b tag_'ÎâÅÎ' tag_'ÅÎÎâ' tag_version dir_size file_size =20B
+	//2b time_year time_month time_day time_hour  =8B
+	WORD wYear, wMonth, wDay, wHour;
 
+	DWORD *pTag = (DWORD *)DB_Buffer;
+	DWORD nDirCount = pTag[7];
+	DWORD nFileCount = pTag[8];
+	if (0 == nDirCount || dwFileSize != *pTag || pTag[1] < (16 + 20 + 8 + 26) || pTag[2] - pTag[1] != (nDirCount << 2) || pTag[4] != 'ÎâÅÎ' || pTag[5] != 'ÅÎÎâ' || pTag[6] != 0x01000001)
+	{
+		g_pMemoryMgr->FreeMemory(DB_Buffer);
+		bRet = FALSE;
+	}
+	PBYTE pByte = PBYTE(pTag + 9);
+	wYear = *(WORD*)pByte;
+	pByte += 2;
+	wMonth = *(WORD*)pByte;
+	pByte += 2;
+	wDay = *(WORD*)pByte;
+	pByte += 2;
+	wHour = *(WORD*)pByte; 
+	pByte += 2;
 
 	return bRet;
 }

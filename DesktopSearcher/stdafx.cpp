@@ -3,4 +3,4 @@
 //	stdafx.obj will contain the pre-compiled type information
 
 #include "stdafx.h"
-
+extern CMemoryMgr* g_pMemoryMgr = CMemoryMgr::GetMemoryMgr();
