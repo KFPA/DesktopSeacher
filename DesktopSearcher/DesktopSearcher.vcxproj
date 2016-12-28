@@ -93,8 +93,13 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DesktopSearcher.cpp" />
+    <ClCompile Include="DirBasicInfoMap.cpp" />
+    <ClCompile Include="ExtArray.cpp" />
+    <ClCompile Include="Index.cpp" />
     <ClCompile Include="MainDlg.cpp" />
     <ClCompile Include="MemoryMgr.cpp" />
+    <ClCompile Include="MemoryPool.cpp" />
+    <ClCompile Include="NameSort.cpp" />
     <ClCompile Include="SearchWorker.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -106,8 +111,15 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CommonHeader.h" />
+    <ClInclude Include="DirBasicInfoMap.h" />
+    <ClInclude Include="ExtArray.h" />
+    <ClInclude Include="Index.h" />
+    <ClInclude Include="IndexNodeBlock.h" />
     <ClInclude Include="MainDlg.h" />
     <ClInclude Include="MemoryMgr.h" />
+    <ClInclude Include="MemoryPool.h" />
+    <ClInclude Include="NameSort.h" />
+    <ClInclude Include="Record.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="SearchWorker.h" />
     <ClInclude Include="stdafx.h" />

@@ -27,6 +27,7 @@ public:
 	*	Commons:
 	**/
 	BOOL LoadDatabase(HWND hMainWnd);
+	DWORD InitSeachProc(PVOID pParam);
 	/**
 	*   Function:
 	*     判断磁盘是否为NTFS卷
@@ -41,12 +42,12 @@ public:
 	void InitDrives();
 public:
 	char vol[26];
-	SMap<DWORD,HANDLE> mapHandle; //保存A~Z的对应的卷句柄 -'A'获取
-	SMap<DWORD, DWORD>  mapBytesPerCluster; //保存每个磁盘对应的每簇字节数
-	SMap<DWORD, DWORD>  mapFileRecSize; //保存每个磁盘对应的MFT文件记录的大小
-	SMap<DWORD, PBYTE>  mapOutBuffer; //每个磁盘的文件块记录地址，初始时分配，结束时取消
-	SMap<DWORD, DWORDLONG> mapJournalID; //保存每个磁盘的journalID
-	SMap<DWORD, USN>    mapFirstUSN; //保存每个磁盘的第一个USN
-	SMap<DWORD, USN>    mapNextUSN; //
+	SArray<HANDLE> m_arrHandle; //保存A~Z的对应的卷句柄 -'A'获取
+	SArray<DWORD>  m_arrBytesPerCluster; //保存每个磁盘对应的每簇字节数
+	SArray<DWORD>  m_arrFileRecSize; //保存每个磁盘对应的MFT文件记录的大小
+	SArray<PBYTE>  m_arrOutBuffer; //每个磁盘的文件块记录地址，初始时分配，结束时取消
+	SArray<DWORDLONG> m_arrJournalID; //保存每个磁盘的journalID
+	SArray<USN>    m_arrFirstUSN; //保存每个磁盘的第一个USN
+	SArray<USN>    m_arrNextUSN; //
 };
 

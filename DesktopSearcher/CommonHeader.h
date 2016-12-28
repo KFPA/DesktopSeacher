@@ -93,6 +93,102 @@ namespace Usntools
 			, NULL);
 	}
 }
+const int ALPHABETA_SIZE = 0x80;
+namespace tools
+{
+	//返回ucs2Len
+	//ucs2Name 以L'\0'结尾
+	static int CodeToUcs2Case(OUT PWCHAR ucs2Name, IN PBYTE pCode, IN int codeLen)
+	{
+		PBYTE pCodeEnd = pCode + codeLen;
+		PWCHAR pUcs2 = ucs2Name;
+		for (; pCode < pCodeEnd; ++pUcs2)
+		{
+			if (*pCode < 0x80){
+				*pUcs2 = *pCode++;
+			}
+			else{
+				++pCode;
+				*pUcs2 = *(PWCHAR)pCode;
+				pCode += 2;
+			}
+		}
+		*pUcs2 = L'\0';
+		return pUcs2 - ucs2Name;
+	}
+
+	//返回ucs2Len
+	//ucs2Name 以L'\0'结尾
+	//ucs2Name中的字母为小写
+	static INT CodeToUcs2NoCase(OUT PWCHAR ucs2Name, IN PBYTE pCode, IN int codeLen)
+	{
+		extern BYTE g_NoCaseTable[ALPHABETA_SIZE];
+		PBYTE pCodeEnd = pCode + codeLen;
+		PWCHAR pUcs2 = ucs2Name;
+		BYTE code;
+		for (; pCode < pCodeEnd; ++pUcs2)
+		{
+			code = *pCode;
+			if (code < 0x80){
+				*pUcs2 = g_NoCaseTable[code];
+				++pCode;
+			}
+			else{
+				++pCode;//跳过标识字符
+				*pUcs2 = *(PWCHAR)pCode;
+				pCode += 2;
+			}
+		}
+		*pUcs2 = L'\0';
+		return pUcs2 - ucs2Name;
+	}
+	static void InitNoCaseTable()
+	{
+		extern BYTE g_NoCaseTable[ALPHABETA_SIZE];
+		for (int i = 0; i < ALPHABETA_SIZE; ++i){
+			if (i >= 'A' && i <= 'Z') g_NoCaseTable[i] = i + 32;
+			else g_NoCaseTable[i] = i;
+		}
+	}
+	static int Ucs2ToCode(OUT PBYTE pCode, IN PWCHAR pUcs2, IN int ucs2Len)
+	{
+		const PWCHAR pUcs2End = pUcs2 + ucs2Len;
+		const PBYTE pCodeBeg = pCode;
+		WCHAR wch;
+		for (; pUcs2 < pUcs2End; ++pUcs2)
+		{
+			wch = *pUcs2;
+			if (wch < 0x80){//常用字母数字
+				*pCode++ = wch;
+			}
+			else{
+				*pCode++ = 0x81;
+				*(PWCHAR)pCode = wch;
+				pCode += 2;
+			}
+		}
+		return pCode - pCodeBeg;
+	}
+	static int Ucs2ToCodeCase(OUT PBYTE pCode, IN PWCHAR pUcs2, IN int ucs2Len)
+	{
+		const PWCHAR pUcs2End = pUcs2 + ucs2Len;
+		const PBYTE pCodeBeg = pCode;
+		WCHAR wch;
+		for (; pUcs2 < pUcs2End; ++pUcs2)
+		{
+			wch = *pUcs2;
+			if (wch < 0x80){//常用字母数字
+				*pCode++ = wch;
+			}
+			else{
+				*pCode++ = 0x81;
+				*(PWCHAR)pCode = wch;
+				pCode += 2;
+			}
+		}
+		return pCode - pCodeBeg;
+	}
+}
 
 #define DATABASEDIR L"C:\\ntfsds.db" //数据库文件存在此目录下
 
