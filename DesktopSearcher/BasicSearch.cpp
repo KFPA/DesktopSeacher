@@ -1,14 +1,13 @@
 
 #include "stdafx.h"
-#include "StrMatch.h"
+
 
 const int ALPHABETA_SIZE=0x80;
 const short FAIL_STATE=0x8000; //-32768 用于AC算法
-
 BYTE g_NoCaseTable[ALPHABETA_SIZE]; //搜索时已经初始化
-SearchStrOpt g_StrOptCase, g_StrOptNoCase;
-COutVector g_vDirOutPtr, g_vFileOutPtr;
-CMemoryMgr g_MemoryMgr;
+
+
+
 
 void Helper_InitNoCaseTable()
 {
