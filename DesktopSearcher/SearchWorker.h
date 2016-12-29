@@ -1,4 +1,5 @@
 #pragma once
+
 class CSearchWorker : public CSingleton<CSearchWorker>
 {
 public:
@@ -40,6 +41,8 @@ public:
 	*     初始化本地磁盘
 	*/
 	void InitDrives();
+protected:
+
 public:
 	char vol[26];
 	SArray<HANDLE> m_arrHandle; //保存A~Z的对应的卷句柄 -'A'获取
@@ -49,5 +52,7 @@ public:
 	SArray<DWORDLONG> m_arrJournalID; //保存每个磁盘的journalID
 	SArray<USN>    m_arrFirstUSN; //保存每个磁盘的第一个USN
 	SArray<USN>    m_arrNextUSN; //
+	CMemoryMgr g_MemoryMgr;
+
 };
 

@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "SearchWorker.h"
+
 template<> CSearchWorker* CSingleton<CSearchWorker>::ms_Singleton = NULL;
 CSearchWorker::CSearchWorker()
 {
@@ -47,26 +48,59 @@ BOOL CSearchWorker::OpenNtfsVolume()
 			if (fileSysBuf[0] == L'N' && fileSysBuf[1] == L'T' && fileSysBuf[2] == L'F' && fileSysBuf[3] == L'S')
 			{
 				//////////获取驱动盘句柄/////////////
-				HANDLE hVolume = Usntools::GetDriversHandle(pDri);
+				HANDLE hVolume = GetDriversHandle(pDri);
 				if (INVALID_HANDLE_VALUE == hVolume)
 				{
-					SStringT strContent;
-					strContent.Format(GETSTRING(L"@string/volerror"), *pDri, GetLastError());
-					DebugString(strContent);
+					DebugStringA("Create volume %c failure code%d", *pDri, GetLastError());
+					return FALSE;
 				}
 
 				m_arrHandle.SetAt(dwDri, hVolume);  //保存句柄
 
 				//////////创建USN日志/////////////
 				NTFS_VOLUME_DATA_BUFFER ntfsVolData;
-				Usntools::CreateUsnJournal(hVolume, ntfsVolData);
+				DWORD dwWritten;
+				DeviceIoControl(hVolume,
+					FSCTL_GET_NTFS_VOLUME_DATA,
+					NULL, 0,
+					&ntfsVolData, sizeof(ntfsVolData),
+					&dwWritten, NULL);
 
 				m_arrBytesPerCluster.SetAt(dwDri, ntfsVolData.BytesPerCluster);
 				m_arrFileRecSize.SetAt(dwDri, sizeof(NTFS_FILE_RECORD_OUTPUT_BUFFER) - 1 + ntfsVolData.BytesPerFileRecordSegment);
+				m_arrOutBuffer.SetAt(dwDri, g_MemoryMgr.GetMemory(m_arrFileRecSize.GetAt(dwDri)));
 			
 				//////////查询USN日志/////////////
 				USN_JOURNAL_DATA usnJournalData;
-				Usntools::QueryUsnJournal(hVolume, &usnJournalData);
+				if (!QueryUsnJournal(hVolume, &usnJournalData)){//查询失败
+
+					switch (GetLastError())
+					{
+					case ERROR_JOURNAL_NOT_ACTIVE:
+					{
+						CreateUsnJournal(hVolume, 0x800000, 0x100000);
+						QueryUsnJournal(hVolume, &usnJournalData);
+					}
+					break;
+					case ERROR_JOURNAL_DELETE_IN_PROGRESS:
+					{
+						DWORD cb;
+						DELETE_USN_JOURNAL_DATA del_ujd;
+						del_ujd.UsnJournalID = usnJournalData.UsnJournalID;
+						del_ujd.DeleteFlags = USN_DELETE_FLAG_NOTIFY;
+						if (!DeviceIoControl(hVolume, FSCTL_DELETE_USN_JOURNAL,
+							&del_ujd, sizeof(DELETE_USN_JOURNAL_DATA),
+							NULL, 0, &cb, NULL
+							)) {
+						}
+						CreateUsnJournal(hVolume, 0x2000000, 0x400000);
+						QueryUsnJournal(hVolume, &usnJournalData);
+					}
+					break;
+					default:
+						break;
+					}
+				}
 				m_arrJournalID.SetAt(dwDri, usnJournalData.UsnJournalID);
 				m_arrFirstUSN.SetAt(dwDri, usnJournalData.FirstUsn);
 				m_arrNextUSN.SetAt(dwDri, usnJournalData.NextUsn);
@@ -119,27 +153,23 @@ BOOL CSearchWorker::LoadDatabase(HWND hMainWnd)
 		NULL);
 	if (INVALID_HANDLE_VALUE == hDB)
 	{
-		SStringT strContent;
-		strContent.Format(GETSTRING(L"@string/volerror"), hDB, GetLastError());
-		DebugString(strContent);
+		DebugStringA("create volume error:%c ,%d",hDB,GetLastError());
 		bRet = FALSE;
 	}
 
 	DWORD dwFileSize = GetFileSize(hDB, NULL);
 	if (INVALID_FILE_SIZE == dwFileSize || dwFileSize <(16+20+8+26))
 	{
-		SStringT strContent;
-		strContent.Format(GETSTRING(L"@string/errorcode"), GetLastError());
-		DebugString(strContent);
+		DebugStringA("get file size error :%d", GetLastError());
 		bRet = FALSE;
 	}
-	PBYTE DB_Buffer = g_pMemoryMgr->GetMemory(dwFileSize);
+	PBYTE DB_Buffer = g_MemoryMgr.GetMemory(dwFileSize);
  	DWORD dwRead;
  	BOOL bReadOK = ReadFile(hDB, DB_Buffer, dwFileSize, &dwRead, NULL);
  	if (!bReadOK || dwRead != dwFileSize)
  	{
- 		DebugString(L"Failed to read file:%d", GetLastError());	
-		g_pMemoryMgr->FreeMemory(DB_Buffer);
+ 		DebugStringA("Failed to read file:%d", GetLastError());	
+		g_MemoryMgr.FreeMemory(DB_Buffer);
 		bRet = FALSE;
  	}
 	//4b 文件大小 MAP偏移 DIR偏移 FILE偏移   =16B
@@ -152,7 +182,7 @@ BOOL CSearchWorker::LoadDatabase(HWND hMainWnd)
 	DWORD nFileCount = pTag[8];
 	if (0 == nDirCount || dwFileSize != *pTag || pTag[1] < (16 + 20 + 8 + 26) || pTag[2] - pTag[1] != (nDirCount << 2) || pTag[4] != '吴盼' || pTag[5] != '盼吴' || pTag[6] != 0x01000001)
 	{
-		g_pMemoryMgr->FreeMemory(DB_Buffer);
+		g_MemoryMgr.FreeMemory(DB_Buffer);
 		bRet = FALSE;
 	}
 	PBYTE pByte = PBYTE(pTag + 9);
@@ -201,7 +231,7 @@ BOOL CSearchWorker::LoadDatabase(HWND hMainWnd)
 		}
 		if (!bRet)
 		{
-			DebugString(L"Your database needs to update! time:%d,%d,%d,%d",wYear, wMonth, wDay, wHour);
+			DebugStringA("Your database needs to update! time:%d,%d,%d,%d",wYear, wMonth, wDay, wHour);
 		}
 	}
 
@@ -267,7 +297,7 @@ DWORD CSearchWorker::InitSeachProc(PVOID pParam)
 					int i, iLen = pRecord->FileNameLength >> 1;
 					if (pRecord->FileAttributes&FILE_ATTRIBUTE_DIRECTORY)
 					{
-						codeNameLen = tools::Ucs2ToCode(szFileNameCode, pFileName, iLen);
+						codeNameLen = Helper_Ucs2ToCode(szFileNameCode, pFileName, iLen);
 						dwMemRecord = GetDirectoryRecordLength(codeNameLen);
 						pDir = (PDIRECTORY_RECORD)g_MemDir.PushBack(dwMemRecord);
 						pDir->InitializeData(dwDri
@@ -296,7 +326,7 @@ DWORD CSearchWorker::InitSeachProc(PVOID pParam)
 						}
 
 						//iLen为UCS2文件名长 去.扩展名
-						codeNameLen = tools::Ucs2ToCode(szFileNameCode, pFileName, iLen);
+						codeNameLen = Helper_Ucs2ToCode(szFileNameCode, pFileName, iLen);
 						DWORD dwNameLenLength = GetNameLenLength(codeNameLen);
 						dwMemRecord = GetNormalFileRecordLength(codeNameLen, dwNameLenLength, dwExtIdLen, dwIconLen);
 						pFile = (PNORMALFILE_RECORD)g_MemFile.PushBack(dwMemRecord);
@@ -396,7 +426,7 @@ DWORD CSearchWorker::InitSeachProc(PVOID pParam)
 	DWORD nDirSize = g_vDirIndex.size();
 	DWORD nFileSize = g_vFileIndex.size();
 	PIndexElemType pTempHead, pTempByte;;
-	pTempHead = (PIndexElemType)g_pMemoryMgr->GetMemory(sizeof(IndexElemType)*(nFileSize>nDirSize ? nFileSize : nDirSize));
+	pTempHead = (PIndexElemType)g_MemoryMgr.GetMemory(sizeof(IndexElemType)*(nFileSize>nDirSize ? nFileSize : nDirSize));
 	
 	//Sorting folder
 	{
@@ -473,6 +503,6 @@ DWORD CSearchWorker::InitSeachProc(PVOID pParam)
 			 }
 		 }
 	 }
-	 g_pMemoryMgr->FreeMemory((PBYTE)pTempHead);
+	 g_MemoryMgr.FreeMemory((PBYTE)pTempHead);
 	 return 0;
 }

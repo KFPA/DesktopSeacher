@@ -12,75 +12,75 @@
 class CExtArray
 {
 
-    static const DWORD DELT=64;
+	static const DWORD DELT = 64;
 public:
-    static DWORD s_dwOmitExt;  //必须实时调用的图标数量 
-    CExtArray();
-    ~CExtArray();
-    DWORD size(){return m_size;}
+	static DWORD s_dwOmitExt;  //必须实时调用的图标数量 
+	CExtArray();
+	~CExtArray();
+	DWORD size(){ return m_size; }
 
-    void InitRealTimeCallExt();
-    
-    //返回索引中的顺序
-    //返回-1表示没有找到
-    int  find(PWCHAR pszExtName)const;
+	void InitRealTimeCallExt();
 
-    //返回索引中的顺序
-    //返回-1表示没有找到
-    int find(PWCHAR pszExtName,int ExtNameLen)const; 
+	//返回索引中的顺序
+	//返回-1表示没有找到
+	int  find(PWCHAR pszExtName)const;
 
-    //遍历文件库时需要插入扩展名
-    //并返回该扩展名所对应的ID
-    int insert(PWCHAR pszExtName,int ExtNameLen); 
+	//返回索引中的顺序
+	//返回-1表示没有找到
+	int find(PWCHAR pszExtName, int ExtNameLen)const;
 
-    int GetExtIndexSequence(int idExtName)const;
+	//遍历文件库时需要插入扩展名
+	//并返回该扩展名所对应的ID
+	int insert(PWCHAR pszExtName, int ExtNameLen);
 
-    int Compare(int idExt1,int idExt2)const;//比较两个扩展名大小
+	int GetExtIndexSequence(int idExtName)const;
 
-    PWCHAR GetExtName(int idExtName)const;
-    //获得几号扩展名的ICON索引
-    //若返回>-2 可直接使用
-    //==-2 需要用户调用SHGetFileInfo
-    //==-3 表明还没有初始化该id
-    //用户需要调用SetIconIndex来初始化扩展名索引
-    int GetIconIndex(int idExtName)const;
+	int Compare(int idExt1, int idExt2)const;//比较两个扩展名大小
 
-    //设置扩展名索引
-    int SetIconIndex(int idExtName,PWCHAR pFilePath,int filePathLen,PWCHAR pFileName,int fileLen);
+	PWCHAR GetExtName(int idExtName)const;
+	//获得几号扩展名的ICON索引
+	//若返回>-2 可直接使用
+	//==-2 需要用户调用SHGetFileInfo
+	//==-3 表明还没有初始化该id
+	//用户需要调用SetIconIndex来初始化扩展名索引
+	int GetIconIndex(int idExtName)const;
 
-    //扩展名数据库操作，优先加载
-    //若返回FALSE 则文件名数据库中的扩展名部分无效
-    //这时需要重新生成文件名数据库
-    BOOL LoadFromFile(PWCHAR pExtFileName);
+	//设置扩展名索引
+	int SetIconIndex(int idExtName, PWCHAR pFilePath, int filePathLen, PWCHAR pFileName, int fileLen);
 
-    //在写文件名数据库之后写到扩展名数据库
-    BOOL WriteToFile(PWCHAR pExtFileName);
-    
-    
+	//扩展名数据库操作，优先加载
+	//若返回FALSE 则文件名数据库中的扩展名部分无效
+	//这时需要重新生成文件名数据库
+	BOOL LoadFromFile(PWCHAR pExtFileName);
+
+	//在写文件名数据库之后写到扩展名数据库
+	BOOL WriteToFile(PWCHAR pExtFileName);
+
+
 private:
-    BOOL  m_bInitReal;
-    DWORD m_dwMax;
-    DWORD m_size;
+	BOOL  m_bInitReal;
+	DWORD m_dwMax;
+	DWORD m_size;
 
-    int *m_piIcon;  //扩展名对应的系统图标号 如果扩展名
-                    //-3表示未初始化 -2表示需要实时调用 -1表示无图标 >=0可直接返回
-                    //一定为-2的 exe ico cur 
+	int *m_piIcon;  //扩展名对应的系统图标号 如果扩展名
+	//-3表示未初始化 -2表示需要实时调用 -1表示无图标 >=0可直接返回
+	//一定为-2的 exe ico cur 
 
-    PWCHAR *m_vpExtName;//扩展名指针数组
+	PWCHAR *m_vpExtName;//扩展名指针数组
 
-    typedef struct IndexNode
-    {
-        PWCHAR  pExtName;       //扩展名存储的数据指针,浪费了空间，以便搜索加速
-        int     idExtName;      //扩展名的id
-        void exchange(IndexNode& node)//交换两个结点
-        {
-            DWORDLONG *p=(DWORDLONG *)&node,
-                *pThis=(DWORDLONG *)this;
-            DWORDLONG temp=*p; 
-            *p=*pThis; 
-            *pThis=temp;
-        }
-    }INDEXNODE,*PINDEXNODE;
-    INDEXNODE *m_vpIndexExtName;//扩展名索引指针数组
+	typedef struct IndexNode
+	{
+		PWCHAR  pExtName;       //扩展名存储的数据指针,浪费了空间，以便搜索加速
+		int     idExtName;      //扩展名的id
+		void exchange(IndexNode& node)//交换两个结点
+		{
+			DWORDLONG *p = (DWORDLONG *)&node,
+				*pThis = (DWORDLONG *)this;
+			DWORDLONG temp = *p;
+			*p = *pThis;
+			*pThis = temp;
+		}
+	}INDEXNODE, *PINDEXNODE;
+	INDEXNODE *m_vpIndexExtName;//扩展名索引指针数组
 };
 

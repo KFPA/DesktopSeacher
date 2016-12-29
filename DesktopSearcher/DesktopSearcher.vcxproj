@@ -92,6 +92,7 @@
     <Text Include="readme.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="BasicSearch.cpp" />
     <ClCompile Include="DesktopSearcher.cpp" />
     <ClCompile Include="DirBasicInfoMap.cpp" />
     <ClCompile Include="ExtArray.cpp" />
@@ -110,19 +111,22 @@
     <ResourceCompile Include="DesktopSearcher.rc" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="CommonHeader.h" />
     <ClInclude Include="DirBasicInfoMap.h" />
     <ClInclude Include="ExtArray.h" />
+    <ClInclude Include="Helper.h" />
     <ClInclude Include="Index.h" />
     <ClInclude Include="IndexNodeBlock.h" />
     <ClInclude Include="MainDlg.h" />
     <ClInclude Include="MemoryMgr.h" />
     <ClInclude Include="MemoryPool.h" />
     <ClInclude Include="NameSort.h" />
+    <ClInclude Include="OutVector.h" />
+    <ClInclude Include="queue.h" />
     <ClInclude Include="Record.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="SearchWorker.h" />
     <ClInclude Include="stdafx.h" />
+    <ClInclude Include="StrMatch.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="res\soui_res.rc2" />
