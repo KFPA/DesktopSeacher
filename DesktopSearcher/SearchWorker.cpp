@@ -396,7 +396,7 @@ DWORD CSearchWorker::InitSeachProc(PVOID pParam)
 			}
 		}
 
-	/*	cBlock = g_vFileIndex.GetBlockCount();
+		cBlock = g_vFileIndex.GetBlockCount();
 		pIndex = g_vFileIndex.GetBlockIndex();
 		for (i = 0; i < cBlock; ++i)
 		{
@@ -420,7 +420,7 @@ DWORD CSearchWorker::InitSeachProc(PVOID pParam)
 					--pData;
 				}
 			}
-		}*/
+		}
 	}
 
 	DWORD nDirSize = g_vDirIndex.size();
