@@ -75,6 +75,16 @@ namespace SOUI
 
     bool SSpinButtonCtrl::OnUpDownClick(EventArgs *pEvt)
     {
+		/////////////火柴盒添加开始////////////////////////////////////
+		SWindow *pBuddy = GetParent()->FindChildByName(m_strBuddy);
+		if (pBuddy)
+		{
+			SStringT strNum = pBuddy->GetWindowTextW();
+			m_nValue = _ttoi(strNum);
+			if (m_nValue < m_nMin) m_nValue = m_nMin;
+			if (m_nValue > m_nMax) m_nValue = m_nMax;
+		}
+		/////////////火柴盒添加结束////////////////////////////////////
         SASSERT(m_uStep < (UINT)abs(m_nMax-m_nMin));
         SASSERT(m_nValue>=m_nMin && m_nValue<=m_nMax);
         

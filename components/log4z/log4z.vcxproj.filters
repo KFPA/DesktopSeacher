@@ -20,4 +20,7 @@
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="log4z.rc" />
+  </ItemGroup>
 </Project>

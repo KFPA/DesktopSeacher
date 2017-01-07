@@ -42,11 +42,6 @@ namespace SOUI
 		{ps_dashdotdot,ARRAYSIZE(ps_dashdotdot)},
 	};
 
-	bool String2Bool(const SStringT & value)
-	{
-		SASSERT(!value.IsEmpty());
-		return !(value == _T("false") || value == _T("0"));
-	}
 
     SkIRect toSkIRect(LPCRECT pRc)
     {
@@ -100,10 +95,9 @@ namespace SOUI
 		return TRUE;
 	}
 
-    BOOL SRenderFactory_Skia::CreateFont( IFont ** ppFont , const LOGFONT &lf ,const IPropBag * pPropBag)
+    BOOL SRenderFactory_Skia::CreateFont( IFont ** ppFont , const LOGFONT &lf ,LPCTSTR pszPropEx)
     {
-        *ppFont = new SFont_Skia(this,&lf);
-		(*ppFont)->SetProps(pPropBag);
+        *ppFont = new SFont_Skia(this,&lf,pszPropEx);
         return TRUE;
     }
 
@@ -128,7 +122,6 @@ namespace SOUI
         ,m_curColor(0xFF000000)//默认黑色
         ,m_hGetDC(0)
         ,m_uGetDCFlag(0)
-		,m_bAntiAlias(true)
 	{
         m_ptOrg.fX=m_ptOrg.fY=0.0f;
         
@@ -372,15 +365,7 @@ namespace SOUI
 		paint.setColor(SColor(m_curPen->GetColor()).toARGB());
 		SGetLineDashEffect skDash(m_curPen->GetStyle());
  		paint.setPathEffect(skDash.Get());
-		if(m_bAntiAlias)
-		{
-			paint.setAntiAlias(true);
-			paint.setStrokeWidth((SkScalar)m_curPen->GetWidth()-0.5f);
-		}else
-		{
-			paint.setAntiAlias(false);
-			paint.setStrokeWidth((SkScalar)m_curPen->GetWidth());
-		}
+		paint.setStrokeWidth((SkScalar)m_curPen->GetWidth()-0.5f);
 		paint.setStyle(SkPaint::kStroke_Style);
 
         SkRect skrc=toSkRect(pRect);
@@ -418,16 +403,9 @@ namespace SOUI
         paint.setColor(SColor(m_curPen->GetColor()).toARGB());
         SGetLineDashEffect skDash(m_curPen->GetStyle());
         paint.setPathEffect(skDash.Get());
+        paint.setStrokeWidth((SkScalar)m_curPen->GetWidth()-0.5f);
         paint.setStyle(SkPaint::kStroke_Style);
-		if(m_bAntiAlias)
-		{
-			paint.setAntiAlias(true);
-			paint.setStrokeWidth((SkScalar)m_curPen->GetWidth()-0.5f);
-		}else
-		{
-			paint.setAntiAlias(false);
-			paint.setStrokeWidth((SkScalar)m_curPen->GetWidth());
-		}
+        paint.setAntiAlias(true);
 
         SkRect skrc=toSkRect(pRect);
         InflateSkRect(&skrc,-0.5f,-0.5f);//要缩小0.5显示效果才和GDI一致。
@@ -439,7 +417,7 @@ namespace SOUI
     HRESULT SRenderTarget_Skia::FillRoundRect( LPCRECT pRect,POINT pt )
     {
         SkPaint paint;
-        paint.setAntiAlias(m_bAntiAlias);
+        paint.setAntiAlias(true);
 
         if(m_curBrush->IsBitmap())
         {
@@ -463,7 +441,7 @@ namespace SOUI
     HRESULT SRenderTarget_Skia::FillSolidRoundRect(LPCRECT pRect,POINT pt,COLORREF cr)
     {
         SkPaint paint;
-        paint.setAntiAlias(m_bAntiAlias);
+        paint.setAntiAlias(true);
 
         paint.setFilterBitmap(false);
         paint.setColor(SColor(cr).toARGB());
@@ -489,19 +467,11 @@ namespace SOUI
         SkPoint::Offset(pts,nCount,m_ptOrg);
 
         SkPaint paint;
-		if(m_bAntiAlias)
-		{
-			paint.setAntiAlias(true);
-			paint.setStrokeWidth((SkScalar)m_curPen->GetWidth()-0.5f);
-		}else
-		{
-			paint.setAntiAlias(false);
-			paint.setStrokeWidth((SkScalar)m_curPen->GetWidth());
-		}
-
+        paint.setAntiAlias(true);
         paint.setColor(SColor(m_curPen->GetColor()).toARGB());
         SGetLineDashEffect skDash(m_curPen->GetStyle());
         paint.setPathEffect(skDash.Get());
+        paint.setStrokeWidth((SkScalar)m_curPen->GetWidth()-0.5f);
         paint.setStyle(SkPaint::kStroke_Style);
         m_SkCanvas->drawPoints(SkCanvas::kPolygon_PointMode,nCount,pts,paint);
         delete []pts;
@@ -573,7 +543,7 @@ namespace SOUI
         skrcDst.offset(m_ptOrg);
 
         SkPaint paint;
-        paint.setAntiAlias(m_bAntiAlias);
+        paint.setAntiAlias(true);
         
         if(byAlpha != 0xFF) paint.setAlpha(byAlpha);
         m_SkCanvas->drawBitmapRectToRect(bmp,&skrcSrc,skrcDst,&paint);
@@ -985,16 +955,8 @@ namespace SOUI
         paint.setColor(SColor(m_curPen->GetColor()).toARGB());
         SGetLineDashEffect skDash(m_curPen->GetStyle());
         paint.setPathEffect(skDash.Get());
+        paint.setStrokeWidth((SkScalar)m_curPen->GetWidth()-0.5f);
         paint.setStyle(SkPaint::kStroke_Style);
-		if(m_bAntiAlias)
-		{
-			paint.setAntiAlias(true);
-			paint.setStrokeWidth((SkScalar)m_curPen->GetWidth()-0.5f);
-		}else
-		{
-			paint.setAntiAlias(false);
-			paint.setStrokeWidth((SkScalar)m_curPen->GetWidth());
-		}
 
         SkRect skrc = toSkRect(pRect);
         skrc.offset(m_ptOrg);
@@ -1015,7 +977,6 @@ namespace SOUI
             paint.setColor(SColor(m_curBrush->GetColor()).toARGB());
         }
         paint.setStyle(SkPaint::kFill_Style);
-        paint.setAntiAlias(m_bAntiAlias);
 
         SkRect skrc=toSkRect(pRect);
         skrc.offset(m_ptOrg);
@@ -1042,16 +1003,8 @@ namespace SOUI
         paint.setColor(SColor(m_curPen->GetColor()).toARGB());
         SGetLineDashEffect skDash(m_curPen->GetStyle());
         paint.setPathEffect(skDash.Get());
+        paint.setStrokeWidth((SkScalar)m_curPen->GetWidth()-0.5f);
         paint.setStyle(SkPaint::kStroke_Style);
-		if(m_bAntiAlias)
-		{
-			paint.setAntiAlias(true);
-			paint.setStrokeWidth((SkScalar)m_curPen->GetWidth()-0.5f);
-		}else
-		{
-			paint.setAntiAlias(false);
-			paint.setStrokeWidth((SkScalar)m_curPen->GetWidth());
-		}
 
         SkRect skrc = toSkRect(pRect);
         skrc.offset(m_ptOrg);
@@ -1147,25 +1100,6 @@ namespace SOUI
 		m_curBmp->UnlockPixelBits(pBits);
 
 		return crRet;
-	}
-
-	void SRenderTarget_Skia::SetProps(const IPropBag * pPropBag)
-	{
-		if(!pPropBag) return;
-		LPCTSTR pszAntiAlias = pPropBag->GetValue(_T("antiAlias"));
-		if(pszAntiAlias)
-		{
-			m_bAntiAlias = String2Bool(pszAntiAlias);
-		}
-	}
-
-	SStringT SRenderTarget_Skia::GetProp(LPCTSTR pszProp) const
-	{
-		if(_tcsicmp(pszProp,_T("antiAlias"))==0)
-		{
-			return SStringT().Format(_T("%d"),m_bAntiAlias?1:0);
-		}
-		return __super::GetProp(pszProp);
 	}
 
     //////////////////////////////////////////////////////////////////////////
@@ -1436,7 +1370,7 @@ namespace SOUI
     }
 
     static int s_cFont =0;
-    SFont_Skia::SFont_Skia( IRenderFactory * pRenderFac,const LOGFONT * plf) 
+    SFont_Skia::SFont_Skia( IRenderFactory * pRenderFac,const LOGFONT * plf ,LPCTSTR pszPropEx) 
         :TSkiaRenderObjImpl<IFont>(pRenderFac)
         ,m_skFont(NULL)
     {
@@ -1454,7 +1388,45 @@ namespace SOUI
 
         m_skPaint.setTextEncoding(SkPaint::kUTF16_TextEncoding);
         m_skPaint.setAntiAlias(true);
-		m_skPaint.setLCDRenderText(true);
+        if(pszPropEx)
+        {
+            SStringT strPropEx(pszPropEx);
+            SStringT strValue = FindPropValue(strPropEx,_T("style"));
+            if(strValue==_T("strokeandfill"))
+                m_skPaint.setStyle(SkPaint::kStrokeAndFill_Style);
+            else if(strValue == _T("fill"))
+                m_skPaint.setStyle(SkPaint::kFill_Style);
+            else if(strValue == _T("stroke"))
+                m_skPaint.setStyle(SkPaint::kStroke_Style);
+
+            strValue = FindPropValue(strPropEx,_T("lcdtext"));
+            if(strValue!=_T("0"))
+                m_skPaint.setLCDRenderText(true);
+
+            
+            strValue = FindPropValue(strPropEx,_T("blurstyle"));
+            SkBlurStyle blurStyle = (SkBlurStyle)-1;
+            if(strValue == _T("normal"))
+                blurStyle = kNormal_SkBlurStyle;
+            else if(strValue == _T("solid"))
+                blurStyle = kSolid_SkBlurStyle;
+            else if(strValue == _T("outer"))
+                blurStyle = kOuter_SkBlurStyle;
+            else if(strValue == _T("inner"))
+                blurStyle = kInner_SkBlurStyle;
+            if(blurStyle!=-1)
+            {
+                strValue = FindPropValue(strPropEx,_T("blurradius"));
+                int nRadius = _ttoi(strValue);
+                if(nRadius>0)
+                {
+                    m_skPaint.setMaskFilter(SkBlurMaskFilter::Create(blurStyle,
+                        SkBlurMask::ConvertRadiusToSigma(SkIntToScalar(nRadius))))->unref();
+
+                }
+            }
+        }
+
 //         STRACE(L"font new: objects = %d", ++s_cFont);
     }
 
@@ -1463,61 +1435,7 @@ namespace SOUI
         if(m_skFont) m_skFont->unref();
 //         STRACE(L"font delete: objects = %d", --s_cFont);
     }
-
-
-	void SFont_Skia::SetProps(const IPropBag *pPropBag)
-	{
-		if(!pPropBag) return;
-		SStringT strValue = pPropBag->GetValue(_T("antiAlias"));
-		if(!strValue.IsEmpty())
-		{
-			m_skPaint.setAntiAlias(String2Bool(strValue));
-		}
-		strValue = pPropBag->GetValue(_T("style"));
-		if(!strValue.IsEmpty())
-		{
-			if(strValue.CompareNoCase(_T("strokeAndFill"))==0)
-				m_skPaint.setStyle(SkPaint::kStrokeAndFill_Style);
-			else if(strValue.CompareNoCase(_T("fill"))!=0)
-				m_skPaint.setStyle(SkPaint::kFill_Style);
-			else if(strValue.CompareNoCase( _T("stroke"))==0)
-				m_skPaint.setStyle(SkPaint::kStroke_Style);
-		}
-
-		strValue = pPropBag->GetValue(_T("lcdtext"));
-		if(!strValue.IsEmpty())
-		{
-			m_skPaint.setLCDRenderText(String2Bool(strValue));
-		}
-
-		strValue = pPropBag->GetValue(_T("blurstyle"));
-		if(!strValue.IsEmpty())
-		{
-			SkBlurStyle blurStyle = (SkBlurStyle)-1;
-			if(strValue.CompareNoCase( _T("normal"))==0)
-				blurStyle = kNormal_SkBlurStyle;
-			else if(strValue .CompareNoCase(_T("solid"))==0)
-				blurStyle = kSolid_SkBlurStyle;
-			else if(strValue.CompareNoCase( _T("outer"))==0)
-				blurStyle = kOuter_SkBlurStyle;
-			else if(strValue.CompareNoCase(_T("inner"))==0)
-				blurStyle = kInner_SkBlurStyle;
-			if(blurStyle!=-1)
-			{
-				strValue = pPropBag->GetValue(_T("blurradius"));
-				int nRadius = _ttoi(strValue);
-				if(nRadius>0)
-				{
-					m_skPaint.setMaskFilter(SkBlurMaskFilter::Create(blurStyle,
-						SkBlurMask::ConvertRadiusToSigma(SkIntToScalar(nRadius))))->unref();
-
-				}
-			}
-		}
-	}
-
-
-//////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////
     namespace RENDER_SKIA
     {
         BOOL SCreateInstance( IObjRef ** ppRenderFactory )

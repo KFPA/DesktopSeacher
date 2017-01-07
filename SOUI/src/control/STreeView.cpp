@@ -624,7 +624,7 @@ namespace SOUI
             return;
         }
 
-        if(m_hSelected != ITvAdapter::ITEM_NULL  && m_bWantTab)
+        if(m_hSelected != ITvAdapter::ITEM_NULL)
         {
             SItemPanel *pItem = GetItemPanel(m_hSelected);
             if(pItem)
@@ -675,25 +675,14 @@ namespace SOUI
         if(nNewSelItem!= ITvAdapter::ITEM_NULL)
         {
             EnsureVisible(nNewSelItem);
-            SetSel(nNewSelItem,TRUE);
+            SetSel(nNewSelItem);
         }
     }
 
 	LRESULT STreeView::OnKeyEvent(UINT uMsg,WPARAM wParam,LPARAM lParam)
 	{
-        LRESULT lRet = 0;
-        SItemPanel *pItem = GetItemPanel(m_hSelected);
-        if (pItem)
-        {
-            lRet = pItem->DoFrameEvent(uMsg, wParam, lParam);
-            SetMsgHandled(pItem->IsMsgHandled());
-        }
-        else
-        {
-            SetMsgHandled(FALSE);
-        }
-        return lRet;
-    }
+	    return 0;
+	}
 
 	void STreeView::UpdateScrollBar()
 	{
@@ -805,13 +794,13 @@ namespace SOUI
         {
             VISIBLEITEMSMAP::CPair *pFind = pMapOld->Lookup(hItem);
             ItemInfo ii;
-			ii.nType = m_adapter->getViewType(hItem);
-            if(pFind && pFind->m_value.nType == ii.nType)
+            if(pFind)
             {//re use the previous item;
-					ii = pFind->m_value;
-					pMapOld->RemoveKey(hItem);
+                ii = pFind->m_value;
+                pMapOld->RemoveKey(hItem);
             }else
             {
+                ii.nType = m_adapter->getViewType(hItem);
                 SList<SItemPanel *> *lstRecycle = m_itemRecycle.GetAt(ii.nType);
                 if(lstRecycle->IsEmpty())
                 {//创建一个新的列表项
@@ -905,8 +894,6 @@ namespace SOUI
 	BOOL STreeView::OnItemGetRect( SItemPanel *pItem,CRect &rcItem )
 	{
         HTREEITEM hItem = (HTREEITEM)pItem->GetItemIndex();
-		if(m_pVisibleMap->Lookup(hItem) == NULL) return FALSE;
-
         int nOffset = m_tvItemLocator->Item2Position(hItem) - m_siVer.nPos;
         rcItem = GetClientRect();
         rcItem.top += nOffset;
@@ -972,14 +959,6 @@ namespace SOUI
 		else {
             if(uMsg==WM_LBUTTONDOWN || uMsg== WM_RBUTTONDOWN || uMsg==WM_MBUTTONDOWN)
 			{//交给panel处理
-				SItemPanel* pPanel = HitTest(CPoint(pt));
-				if (!pPanel && m_hSelected)  //hit in none-item area,so make item to killfocus 
-				{
-					SItemPanel *pSelItem = GetItemPanel(m_hSelected);
-					if (pSelItem) pSelItem->DoFrameEvent(WM_KILLFOCUS, 0, 0);
-					m_hSelected = NULL;
-				}
-
 				__super::ProcessSwndMessage(uMsg,wParam,lParam,lRet);
 			}
 
@@ -1071,9 +1050,8 @@ namespace SOUI
 			if (uCode==SB_THUMBTRACK)
 				ScrollUpdate();
 
-            return TRUE;
-        }
-        return FALSE;
+		}
+		return TRUE;
 	}
 
 	int STreeView::GetScrollLineSize( BOOL bVertical )

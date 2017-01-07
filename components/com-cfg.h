@@ -1,4 +1,4 @@
-Ôªø//SOUIÁªÑ‰ª∂ÈÖçÁΩÆ
+//SOUI◊Èº˛≈‰÷√
 
 #pragma  once
 
@@ -14,7 +14,6 @@
 #define COM_TRANSLATOR _T("translatord.dll")
 #define COM_ZIPRESPROVIDER _T("resprovider-zipd.dll")
 #define COM_LOG4Z   _T("log4zd.dll")
-#define COM_7ZIPRESPROVIDER _T("resprovider-7zipd.dll")
 #else
 #define COM_RENDER_GDI  _T("render-gdi.dll")
 #define COM_RENDER_SKIA _T("render-skia.dll")
@@ -22,9 +21,7 @@
 #define COM_TRANSLATOR _T("translator.dll")
 #define COM_ZIPRESPROVIDER _T("resprovider-zip.dll")
 #define COM_LOG4Z   _T("log4z.dll")
-#define COM_7ZIPRESPROVIDER _T("resprovider-7zip.dll")
-#endif	// _DEBUG
-
+#endif
 
 #ifdef LIB_SOUI_COM
 #pragma message("LIB_SOUI_COM")
@@ -36,6 +33,10 @@
     #pragma comment(lib,"skiad")
     #pragma comment(lib,"zlibd")
     #pragma comment(lib,"pngd")
+    #ifdef DLL_CORE
+    #pragma comment(lib,"lua-52d")
+    #pragma comment(lib,"scriptmodule-luad")
+    #endif
     #pragma comment(lib,"render-gdid")
     #pragma comment(lib,"render-skiad")
     #pragma comment(lib,"imgdecoder-wicd")
@@ -44,14 +45,17 @@
     #pragma comment(lib,"imgdecoder-gdipd")
     #pragma comment(lib,"translatord")
     #pragma comment(lib,"resprovider-zipd")
-    #pragma comment(lib,"7zd")
-    #pragma comment(lib,"resprovider-7zipd")
     #pragma comment(lib,"log4zd")
 #else//_DEBUG
 
     #pragma comment(lib,"skia")
     #pragma comment(lib,"zlib")
     #pragma comment(lib,"png")
+    #ifdef DLL_CORE
+    #pragma comment(lib,"lua-52")
+    #pragma comment(lib,"scriptmodule-lua")
+    #endif
+
     #pragma comment(lib,"imgdecoder-wic")
     #pragma comment(lib,"imgdecoder-stb")
     #pragma comment(lib,"imgdecoder-png")
@@ -60,8 +64,6 @@
     #pragma comment(lib,"render-skia")
     #pragma comment(lib,"translator")
     #pragma comment(lib,"resprovider-zip")
-    #pragma comment(lib,"7z")
-    #pragma comment(lib,"resprovider-7zip")
     #pragma comment(lib,"log4z")
 #endif//_DEBUG
 
@@ -104,10 +106,6 @@ namespace SOUI
     {
         BOOL SCreateInstance(IObjRef **);
     }
-	namespace RESPROVIDER_7ZIP
-	{
-		BOOL SCreateInstance(IObjRef **);
-	} 
     namespace LOG4Z
     {
         BOOL SCreateInstance(IObjRef **);
@@ -162,12 +160,6 @@ public:
     {
         return SOUI::RESPROVIDER_ZIP::SCreateInstance(ppObj);
     }
-
-
-	BOOL CreateResProvider_7ZIP(IObjRef **ppObj)
-	{
-		return SOUI::RESPROVIDER_7ZIP::SCreateInstance(ppObj);
-	}
     
     BOOL CreateLog4z(IObjRef **ppObj)
     {
@@ -224,24 +216,18 @@ public:
         return zipResLoader.CreateInstance(COM_ZIPRESPROVIDER,ppObj);
     }
 
-	BOOL CreateResProvider_7ZIP(IObjRef **ppObj)
-	{
-		return zip7ResLoader.CreateInstance(COM_7ZIPRESPROVIDER, ppObj);
-	}
-	
     BOOL CreateLog4z(IObjRef **ppObj)
     {
         return log4zLoader.CreateInstance(COM_LOG4Z,ppObj);
     }
 protected:
-    //SComLoaderÂÆûÁé∞‰ªéDLLÁöÑÊåáÂÆöÂáΩÊï∞ÂàõÂª∫Á¨¶Âè∑SOUIË¶ÅÊ±ÇÁöÑÁ±ªCOMÁªÑ‰ª∂„ÄÇ
+    //SComLoader µœ÷¥”DLLµƒ÷∏∂®∫Ø ˝¥¥Ω®∑˚∫≈SOUI“™«Ûµƒ¿‡COM◊Èº˛°£
     SComLoader imgDecLoader;
     SComLoader renderLoader;
     SComLoader transLoader;
     SComLoader scriptLoader;
     SComLoader zipResLoader;
     SComLoader log4zLoader;
-    SComLoader zip7ResLoader;
     
     SOUI::SStringT m_strImgDecoder;
 };

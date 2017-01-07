@@ -14,17 +14,18 @@ include_directories(include)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
-file(GLOB_RECURSE CURRENT_HEADERS  *.h *.hpp)
-file(GLOB_RECURSE CURRENT_SRCS  *.cpp)
-file(GLOB_RECURSE CURRENT_SOUIS  *.xml *.idx *.ico)
-file(GLOB_RECURSE CURRENT_RC *.rc *.rc2)
 
-source_group("Header Files" FILES ${CURRENT_HEADERS})
-source_group("Source Files" FILES ${CURRENT_SRCS})
-source_group("SoUI Resouece" FILES ${CURRENT_SOUIS})
-source_group("Resource Files" FILES ${CURRENT_RC})
 
-set(source ${CURRENT_HEADERS} ${CURRENT_SRCS} ${CURRENT_SOUIS})
+aux_source_directory(src         src)
+aux_source_directory(src/core    core)
+aux_source_directory(src/control control)
+aux_source_directory(src/activex activex)
+aux_source_directory(src/event   event)
+aux_source_directory(src/helper  helper)
+aux_source_directory(src/res.mgr res_mgr)
+aux_source_directory(src/updatelayeredwindow updatelayeredwindow)
+
+set(source ${src} ${core} ${control} ${activex} ${event} ${helper} ${res_mgr} ${updatelayeredwindow})
 
 if (NOT ENABLE_SOUI_CORE_LIB)
     set (source  ${source} soui.rc)
@@ -35,5 +36,3 @@ else()
 endif()
 set_target_properties(soui PROPERTIES COTIRE_CXX_PREFIX_HEADER_INIT "include/souistd.h")
 cotire(soui)
-
-set(CORE_LIBS ${CORE_LIBS} soui CACHE INTERNAL "core_lib")

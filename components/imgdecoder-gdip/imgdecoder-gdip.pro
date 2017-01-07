@@ -7,7 +7,6 @@ TARGET = imgdecoder-gdip
 
 !LIB_ALL:!COM_LIB{
 	RC_FILE += imgdecoder-gdip.rc
-	CONFIG += dll
 }
 else{
 	CONFIG += staticlib

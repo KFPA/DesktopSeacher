@@ -124,9 +124,7 @@ namespace SOUI
     bool SScriptModule_Lua::executeScriptedEventHandler( LPCSTR handler_name, EventArgs *pArg)
     {
         LuaFunctionSlot luaFunSlot(d_state,handler_name);
-        bool bRet =  luaFunSlot(pArg);
-		if(bRet) pArg->handled++;
-		return bRet;
+        return luaFunSlot(pArg);
     }
 
     void SScriptModule_Lua::executeString( LPCSTR str )

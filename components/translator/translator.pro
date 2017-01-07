@@ -8,7 +8,6 @@ TARGET = translator
 
 !LIB_ALL:!COM_LIB{
 	RC_FILE += translator.rc
-	CONFIG += dll
 }
 else{
 	CONFIG += staticlib

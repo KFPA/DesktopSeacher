@@ -8,7 +8,6 @@ TARGET = soui
 !LIB_ALL:!LIB_CORE{
     DEFINES += SOUI_EXPORTS
 	RC_FILE += soui.rc
-	CONFIG += dll
 }
 else{
     CONFIG += staticlib
@@ -124,7 +123,6 @@ HEADERS += include/SApp.h \
 		   include/helper/smatrix.h \
 		   include/helper/slog.h \
 		   include/helper/sdibhelper.h \
-		   include/helper/spropbag.h \
            include/interface/imgdecoder-i.h \
            include/interface/render-i.h \
            include/interface/SResProvider-i.h \
@@ -135,8 +133,6 @@ HEADERS += include/SApp.h \
            include/interface/adapter-i.h \
            include/interface/LvItemLocator-i.h \
            include/interface/slog-i.h \
-           include/interface/spropbag-i.h \
-           include/interface/TvItemLocator-i.h \
            include/res.mgr/SFontPool.h \
            include/res.mgr/SObjDefAttr.h \
            include/res.mgr/SResProvider.h \
@@ -215,7 +211,6 @@ SOURCES += src/SApp.cpp \
    		   src/helper/smenuex.cpp \
    		   src/helper/smatrix.cpp \
 		   src/helper/sdibhelper.cpp \
-		   src/helper/spropbag.cpp \
            src/res.mgr/SFontPool.cpp \
            src/res.mgr/SObjDefAttr.cpp \
            src/res.mgr/SResProvider.cpp \
