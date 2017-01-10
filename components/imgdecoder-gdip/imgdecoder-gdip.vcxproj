@@ -41,7 +41,7 @@
     <_ProjectFileVersion>12.0.30501.0</_ProjectFileVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>..\..\bin\</OutDir>
+    <OutDir>..\..\Debug\</OutDir>
     <IntDir>..\..\obj\debug\imgdecoder-gdip\</IntDir>
     <IgnoreImportLibrary>true</IgnoreImportLibrary>
   </PropertyGroup>
